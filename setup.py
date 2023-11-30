@@ -19,7 +19,7 @@ setuptools.setup(
             'vkdclient = vkd_client:setup_vkdclient',
         ],
         'console_scripts': [
-            'vkd = vkd_client.cli:'
+            'vkd = vkd_client.cli:main'
         ]
     },
     package_data={
