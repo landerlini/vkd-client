@@ -50,7 +50,7 @@ def process_file(filename: str):
         response.raise_for_status()
 
 
-def main(files: List[str]):
+def main():
     parser = ArgumentParser()
     parser.add_argument("files", nargs="+",
                         help="YAML files defining REST queries")
