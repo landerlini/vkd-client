@@ -65,7 +65,7 @@ def main():
             level=logging.DEBUG if args.verbose else logging.INFO
         )
 
-    for file in files:
+    for file in args.files:
         logging.info(f"Processing file {file}")
         process_file(file)
         logging.info(f"File {file} processed.")
