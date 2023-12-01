@@ -12,7 +12,7 @@ def setup_vkdclient():
         'port': 8000,
         'new_browser_tab': False,
         'launcher_entry': {
-            'title': 'VS Code IDE',
+            'title': 'VK dispatcher',
             #'icon_path': os.path.join(os.path.dirname(os.path.abspath(__file__)),
             #                          'icons', 'vscode.svg')
         }
