@@ -5,6 +5,9 @@ See https://jupyter-server-proxy.readthedocs.io/en/latest/server-process.html
 for more information.
 """
 
+from .YamlProcessor import YamlProcessor
+from .Table import Table
+
 
 def setup_vkdclient():
     return {

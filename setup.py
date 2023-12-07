@@ -13,13 +13,16 @@ setuptools.setup(
         'jupyter-server-proxy',
         'requests',
         'pyyaml',
+        'cyclopts',
+        'pandas',
+        'jinja2',
     ],
     entry_points={
         'jupyter_serverproxy_servers': [
             'vkdclient = vkd_client:setup_vkdclient',
         ],
         'console_scripts': [
-            'vkd = vkd_client.cli:main'
+            'vkd = vkd_client.__main__:main'
         ]
     },
     package_data={
