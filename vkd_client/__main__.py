@@ -15,6 +15,7 @@ from pprint import pprint
 import os
 from argparse import ArgumentParser
 from vkd_client import YamlProcessor
+import jinja2
 
 from cyclopts import App
 app = App()
@@ -33,6 +34,26 @@ def request(input_file: Path):
     result = processor.process(open(input_file).read())
     pprint(result)
 
+@app.command
+def jobs(user: str = os.environ.get('JUPYTERHUB_USER'), queue: str = None):
+    """
+    List the jobs
+
+    Parameters
+    ----------
+    user
+        restrict list to a single username
+    queue
+        restrict list to a single queue
+    """
+    processor = YamlProcessor()
+    with open(os.path.join(os.path.dirname(__file__), 'templates', 'jobs.yaml')) as template_file:
+        template = jinja2.Environment().from_string(template_file.read())
+    result = processor.process(template.render(
+        user=user,
+        queue=queue,
+    ))
+    pprint(result)
 
 @app.default
 def splash():

@@ -55,7 +55,7 @@ class BaseProcessor:
         if raw_json is None:
             return [default]
         elif isinstance(raw_json, list):
-            return sum([BaseProcessor._extract_fields(sub_field, field) for sub_field in raw_json], [])
+            return sum([BaseProcessor._extract_fields(sub_field, field, default) for sub_field in raw_json], [])
         elif isinstance(raw_json, dict):
             if len(field) == 1:  # leaf
                 ret = raw_json.get(field[0], default)
@@ -103,6 +103,7 @@ class BaseProcessor:
                 ret.append(
                     Table(
                         title=req.title,
+                        queries=req.where,
                         data={
                             field_name: self._extract_fields(
                                 raw_json,

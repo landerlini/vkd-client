@@ -1,6 +1,6 @@
 import json
 from typing import List, Dict, Union, Any, Literal, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 GenericData = Union[str, List[Any], Dict[str, Any], None]
 
@@ -13,7 +13,8 @@ class RestConfigBlock(BaseModel):
     method: Literal['GET', 'POST', 'DELETE']
     resource: str
     title: Optional[str] = None
-    select: Dict[str, Dict[Literal['field', 'default'], Any]]
+    select: Union[Dict[str, Dict[Literal['field', 'default'], Any]], None] = None
+    where: Union[List[str], None] = None
     data: GenericData = None
 
     def json_data(self) -> Union[str, None]:

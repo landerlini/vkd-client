@@ -1,0 +1,37 @@
+method: POST
+resource: bunshinjobs
+data:
+  - name: sandbox-test
+    queue: hackathon
+    original_pod: null
+    volumes: []
+    allow_nfs: False
+    script: /sandbox/entrypoint.sh
+    completions: 2
+
+    # spec:
+    #   template:
+    #     spec:
+    #       restartPolicy: Never
+    #       containers:
+    #         - name: main
+    #           image: python:latest
+    #           restartPolicy: Never
+    #           command:
+    #            - bash
+    #            - /sandbox/entrypoint.sh
+    #
+
+
+    sandbox:
+      entrypoint.sh: |
+        #!/bin/bash
+        python -m pip install particle
+        python /sandbox/main.py
+
+      main.py: |
+        import os
+        import particle
+        print(f"Current job is {os.environ.get('JOB_COMPLETION_INDEX', -1)}")
+        print (particle.Particle.from_pdgid(211))
+        
