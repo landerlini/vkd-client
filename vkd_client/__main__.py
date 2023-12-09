@@ -56,7 +56,7 @@ def jobs(user: str = os.environ.get('JUPYTERHUB_USER'), queue: str = None):
     pprint(result)
 
 @app.default
-def splash():
+def vkd():
     print(textwrap.dedent(r"""
         __      ,_      ,-. 
         \ \    / /    __| |
