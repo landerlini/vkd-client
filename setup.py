@@ -28,6 +28,8 @@ setuptools.setup(
     },
     package_data={
         '': ['icons/*', 'vkd_client/templates/*.yaml'],
-        'vkd_client/template': ['vkd_client/templatesu/*.yaml'],
     },
+    data_files=[
+        ('vkd_client/template', ['vkd_client/templates/*.yaml']),
+    ]
 )
