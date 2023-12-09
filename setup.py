@@ -16,6 +16,7 @@ setuptools.setup(
         'cyclopts',
         'pandas',
         'jinja2',
+        'pydantic',
     ],
     entry_points={
         'jupyter_serverproxy_servers': [
