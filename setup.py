@@ -30,6 +30,6 @@ setuptools.setup(
         '': ['icons/*', 'vkd_client/templates/*.yaml'],
     },
     data_files=[
-        ('', ['vkd_client/templates/*.yaml']),
+        ('vkd_client/templates', ['vkd_client/templates/jobs.yaml']),
     ]
 )
