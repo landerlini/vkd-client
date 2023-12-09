@@ -26,10 +26,10 @@ setuptools.setup(
             'vkd = vkd_client.__main__:main'
         ]
     },
-    package_data={
-        '': ['icons/*', 'vkd_client/templates/*.yaml'],
-    },
-    data_files=[
-        ('vkd_client/templates', ['vkd_client/templates/jobs.yaml']),
-    ]
+    # package_data={
+    #     '': ['icons/*', 'vkd_client/templates/*.yaml'],
+    # },
+    # data_files=[
+    #     ('vkd_client/templates', ['vkd_client/templates/jobs.yaml']),
+    # ]
 )
