@@ -1,0 +1,11 @@
+method: GET
+resource: logs
+title: Logs
+data:
+  job_name: {{ job }}
+  {% if index != None %}
+  job_completion_index: {{ index }}
+  {% endif %}
+  {% if container != None %}
+  container: {{ container }}
+  {% endif %}
