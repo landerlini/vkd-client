@@ -17,6 +17,7 @@ setuptools.setup(
         'pandas',
         'jinja2',
         'pydantic',
+        'tabulate',
     ],
     entry_points={
         'jupyter_serverproxy_servers': [
