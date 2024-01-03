@@ -1,5 +1,7 @@
 #!/bin/env python3
+import sys
 from pathlib import Path
+from typing import Literal
 
 import logging
 import textwrap
@@ -11,11 +13,14 @@ import yaml
 import json
 import requests
 from pprint import pprint
+import stat
 
 import os
 from argparse import ArgumentParser
 from vkd_client import YamlProcessor
+from vkd_client import queue_tools
 import jinja2
+
 
 from cyclopts import App
 app = App()
@@ -75,16 +80,24 @@ def logs(job: str, index: Union[int, None] = None, container: Union[str, None] =
         print(f"\n### Job Pod: {pod_name}")
         print(log)
 
+@app.command
+def queues():
+    """
+    Retrieve and diplay the queues, or updates the configuration of the queues.
+    """
+    if stat.S_ISREG(os.fstat(0).st_mode):       # vkd queues < some_input.csv
+        queue_tools.update_queues(''.join(sys.stdin))
+    else:
+        raw_queues = _process_form_template('queues')
+        print (queue_tools.format_queues(raw_queues))
+
 @app.default
 def vkd():
     print(textwrap.dedent(r"""
-        __      ,_      ,-. 
-        \ \    / /    __| |
-         \ \  / /    / _| |
-          \ \/ / \  | |_| |
-           \__/ \_\  \__|_|
-    
-    Virtual Kubelet Dispatcher. (c) INFN 2024.
+     __   ___  __     _ 
+     \ \ / / |/ /  __| |
+      \ V /| ' <  / _` |
+       \_/ |_|\_\ \__,_|   Virtual Kubelet Dispatcher. (c) INFN 2024.
     
     """))
 
