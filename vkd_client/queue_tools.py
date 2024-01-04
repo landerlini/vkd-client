@@ -23,6 +23,7 @@ def update_queues(raw_input: str):
                 name=queue_name,
                 spec=dict(
                     cohort=next(iter(cohorts)),
+                    namespaceSelector={},
                     resourceGroups=[
                         dict(
                             coveredResources=["cpu", "memory", "nvidia.com/gpu"],
