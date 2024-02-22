@@ -7,6 +7,7 @@ for more information.
 
 from .YamlProcessor import YamlProcessor
 from .Table import Table
+from . import utils 
 
 
 def setup_vkdclient():

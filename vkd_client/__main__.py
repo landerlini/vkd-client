@@ -8,29 +8,23 @@ import textwrap
 from pprint import pprint
 from typing import List, Union
 from datetime import datetime
-import pprint
 import yaml
 import json
 import requests
-from pprint import pprint
+from pprint import pprint, pformat
 import stat
 
 import os
+import re
 from argparse import ArgumentParser
 from vkd_client import YamlProcessor
 from vkd_client import queue_tools
+from vkd_client.utils import process_form_template, get_snakemake_job_properties
 import jinja2
 
 
 from cyclopts import App
 app = App()
-
-
-def _process_form_template(template: str, **kwargs):
-    processor = YamlProcessor()
-    with open(os.path.join(os.path.dirname(__file__), 'templates', f'{template}.yaml')) as template_file:
-        template = jinja2.Environment().from_string(template_file.read())
-    return processor.process(template.render(**kwargs))
 
 
 @app.command
@@ -59,7 +53,7 @@ def jobs(user: str = os.environ.get('JUPYTERHUB_USER'), queue: str = None):
     queue
         restrict list to a single queue
     """
-    pprint(_process_form_template('jobs', user=user, queue=queue))
+    pprint(process_form_template('jobs', user=user, queue=queue))
 
 @app.command
 def logs(job: str, index: Union[int, None] = None, container: Union[str, None] = None):
@@ -75,7 +69,7 @@ def logs(job: str, index: Union[int, None] = None, container: Union[str, None] =
     container
         Optional, the name of the container to display if not the main one
     """
-    logs = _process_form_template('logs', job=job, index=index, container=container)
+    logs = process_form_template('logs', job=job, index=index, container=container)
     for pod_name, log in logs.items():
         print(f"\n### Job Pod: {pod_name}")
         print(log)
@@ -88,8 +82,26 @@ def queues():
     if stat.S_ISREG(os.fstat(0).st_mode):       # vkd queues < some_input.csv
         queue_tools.update_queues(''.join(sys.stdin))
     else:
-        raw_queues = _process_form_template('queues')
+        raw_queues = process_form_template('queues')
         print (queue_tools.format_queues(raw_queues))
+
+@app.command
+def from_snakemake(jobscript: str):
+    """
+    Thin wrapper to enable submitting jobs via Snakemake
+    """
+    logging.debug(f"from_snakemake invoked with script: {jobscript}")
+    properties = get_snakemake_job_properties(jobscript)
+    logging.debug(pformat(properties))
+    process_form_template(
+        'from_snakemake', 
+        queue='default', 
+        priority='lowest', 
+        jobscript=open(jobscript).read(), 
+        snakemake=properties,
+    )
+    logging.debug(f"User command has been executed. Returning control to Snakemake.")
+
 
 @app.default
 def vkd():

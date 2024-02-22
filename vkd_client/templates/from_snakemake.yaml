@@ -1,0 +1,15 @@
+method: POST
+resource: bunshinjobs
+data:
+  - name: {{ snakemake.rule }}
+    queue: {{ queue }}
+    priority: {{ priority }}
+
+    script: /sandbox/snakemake_script.sh
+    sandbox:
+      snakemake_script.sh: |
+{{ jobscript | indent(12, True) }}
+
+    volumes:
+      nfs:
+        - /home/private
