@@ -1,4 +1,5 @@
 from vkd_client import YamlProcessor
+from typing import Collection, List
 import os 
 import jinja2 
 import logging
@@ -34,3 +35,19 @@ def get_snakemake_job_properties(filepath: str):
 
         return json.loads(groups[0])
 
+
+def get_nfs_volumes_from_filenames(filenames: Collection[str]) -> List[str]:
+    """
+    Explore `/proc/mounts` to identify NFS mount-points providing files in `filenames`.
+    """
+    ## Identify nfs volumes
+    import pandas as pd 
+    mounts = pd.read_csv("/proc/mounts", sep=" ", header=None)
+    mounts.columns=['device', 'mount_point', 'fs', 'options', 'dummy', 'dummy']
+    nfs_mounts = mounts[mounts.fs.str.contains('nfs')].mount_point.values
+    required_nfs_mounts = []
+    for filename in filenames:
+        abs_path = os.path.abspath(filename)
+        required_nfs_mounts += [mp for mp in nfs_mounts if abs_path.startswith(mp)]
+    
+    return list(set(required_nfs_mounts))

@@ -20,7 +20,11 @@ import re
 from argparse import ArgumentParser
 from vkd_client import YamlProcessor
 from vkd_client import queue_tools
-from vkd_client.utils import process_form_template, get_snakemake_job_properties
+from vkd_client.utils import (
+    process_form_template, 
+    get_snakemake_job_properties, 
+    get_nfs_volumes_from_filenames
+)
 import jinja2
 
 
@@ -122,14 +126,19 @@ def from_snakemake(jobscript: str, queue: str, priority: str = "lowest"):
     logging.debug(f"from_snakemake invoked with script: {jobscript}")
     properties = get_snakemake_job_properties(jobscript)
     logging.debug(pformat(properties))
+    nfs_volumes = get_nfs_volumes_from_filenames(
+        sum([properties[category] for category in ('input', 'output', 'log')], [])
+        )
+
     jobnames = process_form_template(
         'from_snakemake', 
         queue=queue, 
         priority=priority, 
         jobscript=open(jobscript).read(), 
         snakemake=properties,
+        nfs_volumes=nfs_volumes,
     )
-    
+
     while True:
         time.sleep(3)
         jobs = process_form_template('jobs', user=None, queue=queue).df

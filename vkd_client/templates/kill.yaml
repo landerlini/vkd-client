@@ -1,0 +1,6 @@
+method: DELETE
+resource: jobs
+data:
+  {% for name in jobnames %}
+  - name: {{ name }}
+  {% endfor %}

@@ -4,12 +4,36 @@ data:
   - name: {{ snakemake.rule }}
     queue: {{ queue }}
     priority: {{ priority }}
+    {% if snakemake.resources.millicpu is defined %}
+    cpu_request: {{ snakemake.resources.millicpu }}m
+    {% else %}
+    cpu_request: {{ snakemake.threads }}
+    {% endif %}
+    
+    {% if snakemake.resources.mem_mb is defined %}
+    memory_request: {{ snakemake.resources.mem_mb }}Mi
+    {% endif %}
+
+    {% if snakemake.resources.gpu_mb is defined %}
+    gpu_memory_request: {{ snakemake.resources.gpu_mb }}Mi
+    {% endif %}
+
+    {% if snakemake.resources.runtime is defined %}
+    active_deadline_seconds: {{ snakemake.resources.runtime }}
+    {% endif %}
+    
 
     script: /sandbox/snakemake_script.sh
     sandbox:
       snakemake_script.sh: |
 {{ jobscript | indent(12, True) }}
 
+    {% if nfs_volumes | length %}
     volumes:
       nfs:
-        - /home/private
+      {% for volume in nfs_volumes %}
+        - {{ volume }} 
+      {% endfor %}
+    {% endif %}
+    
+        
