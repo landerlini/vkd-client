@@ -1,0 +1,1 @@
+pip install .[snakemake] --force-reinstall --no-deps

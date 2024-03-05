@@ -119,7 +119,7 @@ def queues():
         print (queue_tools.format_queues(raw_queues))
 
 @app.command
-def from_snakemake(jobscript: str, queue: str, priority: str = "lowest"):
+def from_snakemake(jobscript: str, queue: str, priority: str = "lowest", cvmfs: bool = False):
     """
     Thin wrapper to enable submitting jobs via Snakemake
     """
@@ -134,6 +134,7 @@ def from_snakemake(jobscript: str, queue: str, priority: str = "lowest"):
         'from_snakemake', 
         queue=queue, 
         priority=priority, 
+        cvmfs=cvmfs,
         jobscript=open(jobscript).read(), 
         snakemake=properties,
         nfs_volumes=nfs_volumes,
@@ -147,7 +148,7 @@ def from_snakemake(jobscript: str, queue: str, priority: str = "lowest"):
             return 0
         if any([jobname in jobs.query('failed > 0').name.values for jobname in jobnames]):
             logging.error(f"Failure executing job {properties['rule']}")
-            logging.error(f"Check logs with `vkd logs {jobname}`")
+            logging.error(f"Check logs with `vkd logs {jobnames[0]}`")
             raise RuntimeError(f"VKD failed processing rule {properties['rule']}")
         
 

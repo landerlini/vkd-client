@@ -4,6 +4,11 @@ data:
   - name: {{ snakemake.rule }}
     queue: {{ queue }}
     priority: {{ priority }}
+    
+    {% if cvmfs is defined and cvmfs is sameas true %}
+    cvmfs_provisioning: pvc-csi
+    {% endif %}
+
     {% if snakemake.resources.millicpu is defined %}
     cpu_request: {{ snakemake.resources.millicpu }}m
     {% else %}
