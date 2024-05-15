@@ -1,7 +1,7 @@
 method: POST
 resource: bunshinjobs
 data:
-  - name: {{ snakemake.rule }}
+  - name: {{ snakemake.rule | replace("_", "-")}}
     queue: {{ queue }}
     priority: {{ priority }}
     {% if snakemake.resources.millicpu is defined %}
@@ -21,7 +21,13 @@ data:
     {% if snakemake.resources.runtime is defined %}
     active_deadline_seconds: {{ snakemake.resources.runtime }}
     {% endif %}
-    
+
+    {% if cvmfs_provisioning is defined %}
+    cvmfs_provisioning: {{ cvmfs_provisioning }}
+    {% endif %}
+
+    provide_output_url: False    
+    ttl_seconds_after_finished: 3600
 
     script: /sandbox/snakemake_script.sh
     sandbox:

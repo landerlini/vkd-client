@@ -1,7 +1,7 @@
 #!/bin/env python3
 import sys
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Optional
 import time
 
 import logging
@@ -119,16 +119,25 @@ def queues():
         print (queue_tools.format_queues(raw_queues))
 
 @app.command
-def from_snakemake(jobscript: str, queue: str, priority: str = "lowest"):
+def from_snakemake(
+    jobscript: str, 
+    queue: str, 
+    priority: str = "lowest", 
+    cvmfs_provisioning: str = "none",
+    nfs_volumes: Optional[str] = None,
+    ):
     """
     Thin wrapper to enable submitting jobs via Snakemake
     """
     logging.debug(f"from_snakemake invoked with script: {jobscript}")
     properties = get_snakemake_job_properties(jobscript)
     logging.debug(pformat(properties))
-    nfs_volumes = get_nfs_volumes_from_filenames(
-        sum([properties[category] for category in ('input', 'output', 'log')], [])
-        )
+    nfs_volumes = (
+        [] if nfs_volumes is None else nfs_volumes.split(":") +
+        get_nfs_volumes_from_filenames(
+            sum([properties[category] for category in ('input', 'output', 'log')], [])
+            )
+    )
 
     jobnames = process_form_template(
         'from_snakemake', 
@@ -137,18 +146,24 @@ def from_snakemake(jobscript: str, queue: str, priority: str = "lowest"):
         jobscript=open(jobscript).read(), 
         snakemake=properties,
         nfs_volumes=nfs_volumes,
+        cvmfs_provisioning=cvmfs_provisioning,
     )
 
-    while True:
-        time.sleep(3)
-        jobs = process_form_template('jobs', user=None, queue=queue).df
-        if all([jobname in jobs.query('succeeded == total').name.values for jobname in jobnames]):
-            logging.debug(f"User command has been executed. Returning control to Snakemake.")
-            return 0
-        if any([jobname in jobs.query('failed > 0').name.values for jobname in jobnames]):
-            logging.error(f"Failure executing job {properties['rule']}")
-            logging.error(f"Check logs with `vkd logs {jobname}`")
-            raise RuntimeError(f"VKD failed processing rule {properties['rule']}")
+    if len(jobnames):
+        print (jobnames[0])
+    else:
+        raise RuntimeError(f"Submission failed.")
+
+    # while True:
+    #     time.sleep(3)
+    #     jobs = process_form_template('jobs', user=None, queue=queue).df
+    #     if all([jobname in jobs.query('succeeded == total').name.values for jobname in jobnames]):
+    #         logging.debug(f"User command has been executed. Returning control to Snakemake.")
+    #         return 0
+    #     if any([jobname in jobs.query('failed > 0').name.values for jobname in jobnames]):
+    #         logging.error(f"Failure executing job {properties['rule']}")
+    #         logging.error(f"Check logs with `vkd logs {jobname}`")
+    #         raise RuntimeError(f"VKD failed processing rule {properties['rule']}")
         
 
 @app.default
