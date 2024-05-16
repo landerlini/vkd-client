@@ -137,8 +137,8 @@ def from_snakemake(
     logging.debug(pformat(properties))
 
     special_volumes = {
-        FileSystemType('nfs'): [] if nfs_volumes is None else list(nfs_volumes.split(":")),
-        FileSystemType('juicefs'): [] if juicefs_volumes is None else list(juicefs_volumes.split(":")),
+        'nfs': [] if nfs_volumes is None else list(nfs_volumes.split(":")),
+        'juicefs': [] if juicefs_volumes is None else list(juicefs_volumes.split(":")),
     }
 
     for special_volume_type, special_volume_mounts in special_volumes:
