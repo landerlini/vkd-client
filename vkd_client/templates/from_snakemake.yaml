@@ -47,9 +47,9 @@ data:
       {% endfor %}
     {% endif %}
 
-    {% if nfs_volumes %}
+    {% if juicefs_volumes %}
       juicefs:
-      {% for volume in nfs_volumes %}
+      {% for volume in juicefs_volumes %}
         - {{ volume }}
       {% endfor %}
     {% endif %}
