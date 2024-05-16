@@ -128,6 +128,8 @@ def from_snakemake(
     juicefs_volumes: Optional[str] = None,
     juicefs_provisioning: Literal['none', 'pvc-csi', 'sidecar'] = "none",
     cvmfs_provisioning: Literal['none', 'pvc-csi'] = "none",
+    offloading: Optional[bool] = False,
+    target: Optional[str] = None,
     ):
     """
     Thin wrapper to enable submitting jobs via Snakemake
@@ -156,6 +158,8 @@ def from_snakemake(
         snakemake=properties,
         juicefs_provisioning=juicefs_provisioning,
         cvmfs_provisioning=cvmfs_provisioning,
+        offloading=offloading,
+        target=target,
         **{f"{fs_type}_volumes": mounts for fs_type, mounts in special_volumes.items()},
     )
 

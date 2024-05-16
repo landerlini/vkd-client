@@ -55,5 +55,13 @@ data:
     {% endif %}
     {% endif %}
 
+  {% if offloading or target %}
+  offloading:
+      enabled: true
+      {% if target %}
+      node_name: {{ target }}
+      {% endif %}
+  {% endif %}
+
 
         
