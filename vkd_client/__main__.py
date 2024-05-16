@@ -141,7 +141,8 @@ def from_snakemake(
         'juicefs': [] if juicefs_volumes is None else list(juicefs_volumes.split(":")),
     }
 
-    for special_volume_type, special_volume_mounts in special_volumes:
+    for special_volume_type, special_volume_mounts in special_volumes.items():
+        # noinspection PyTypeChecker
         special_volume_mounts += get_volumes_from_filenames(
             sum([properties[category] for category in ('input', 'output', 'log')], []),
             filesystem_type=special_volume_type
