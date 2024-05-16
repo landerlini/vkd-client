@@ -123,8 +123,10 @@ def from_snakemake(
     jobscript: str, 
     queue: str, 
     priority: str = "lowest", 
-    cvmfs_provisioning: str = "none",
     nfs_volumes: Optional[str] = None,
+    juicefs_volumes: Optional[str] = None,
+    juicefs_provisioning: Literal['none', 'pvc-csi', 'sidecar'] = "none",
+    cvmfs_provisioning: Literal['none', 'pvc-csi'] = "none",
     ):
     """
     Thin wrapper to enable submitting jobs via Snakemake
@@ -146,6 +148,8 @@ def from_snakemake(
         jobscript=open(jobscript).read(), 
         snakemake=properties,
         nfs_volumes=nfs_volumes,
+        juicefs_volumes=juicefs_volumes,
+        juicefs_provisioning=juicefs_provisioning,
         cvmfs_provisioning=cvmfs_provisioning,
     )
 

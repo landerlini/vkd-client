@@ -26,6 +26,10 @@ data:
     cvmfs_provisioning: {{ cvmfs_provisioning }}
     {% endif %}
 
+    {% if juicefs_provisioning is defined %}
+    juicefs_provisioning: {{ juicefs_provisioning }}
+    {% endif %}
+
     provide_output_url: False    
     ttl_seconds_after_finished: 3600
 
@@ -34,12 +38,22 @@ data:
       snakemake_script.sh: |
 {{ jobscript | indent(12, True) }}
 
-    {% if nfs_volumes | length %}
+    {% if nfs_volumes or juicefs_volumes %}
     volumes:
+    {% if nfs_volumes %}
       nfs:
       {% for volume in nfs_volumes %}
         - {{ volume }} 
       {% endfor %}
     {% endif %}
-    
+
+    {% if nfs_volumes %}
+      juicefs:
+      {% for volume in nfs_volumes %}
+        - {{ volume }}
+      {% endfor %}
+    {% endif %}
+    {% endif %}
+
+
         
