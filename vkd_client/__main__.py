@@ -21,9 +21,10 @@ from argparse import ArgumentParser
 from vkd_client import YamlProcessor
 from vkd_client import queue_tools
 from vkd_client.utils import (
+    FileSystemType,
     process_form_template, 
     get_snakemake_job_properties, 
-    get_nfs_volumes_from_filenames
+    get_volumes_from_filenames
 )
 import jinja2
 
@@ -134,27 +135,31 @@ def from_snakemake(
     logging.debug(f"from_snakemake invoked with script: {jobscript}")
     properties = get_snakemake_job_properties(jobscript)
     logging.debug(pformat(properties))
-    nfs_volumes = (
-        [] if nfs_volumes is None else nfs_volumes.split(":") +
-        get_nfs_volumes_from_filenames(
-            sum([properties[category] for category in ('input', 'output', 'log')], [])
-            )
-    )
 
-    jobnames = process_form_template(
+    special_volumes = {
+        FileSystemType('nfs'): [] if nfs_volumes is None else list(nfs_volumes.split(":")),
+        FileSystemType('juicefs'): [] if juicefs_volumes is None else list(juicefs_volumes.split(":")),
+    }
+
+    for special_volume_type, special_volume_mounts in special_volumes:
+        special_volume_mounts += get_volumes_from_filenames(
+            sum([properties[category] for category in ('input', 'output', 'log')], []),
+            filesystem_type=special_volume_type
+        )
+
+    job_names = process_form_template(
         'from_snakemake', 
         queue=queue, 
         priority=priority, 
         jobscript=open(jobscript).read(), 
         snakemake=properties,
-        nfs_volumes=nfs_volumes,
-        juicefs_volumes=juicefs_volumes,
         juicefs_provisioning=juicefs_provisioning,
         cvmfs_provisioning=cvmfs_provisioning,
+        **{f"{fs_type}_volumes": mounts for fs_type, mounts in special_volumes.items()},
     )
 
-    if len(jobnames):
-        print (jobnames[0])
+    if len(job_names):
+        print(job_names[0])
     else:
         raise RuntimeError(f"Submission failed.")
 
