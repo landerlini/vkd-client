@@ -8,6 +8,7 @@ import vkd_client.configuration as config
 from pydantic import validate_call
 
 from .Table import Table
+from .parse_quantity import parse_quantity
 
 class BaseProcessor:
     def __init__(self, api_url: str = config.VKD_API_URL):
@@ -55,7 +56,16 @@ class BaseProcessor:
         if raw_json is None:
             return [default]
         elif isinstance(raw_json, list):
-            return sum([BaseProcessor._extract_fields(sub_field, field, default) for sub_field in raw_json], [])
+            ret_values = [BaseProcessor._extract_fields(sub_field, field, default) for sub_field in raw_json]
+            
+            ## Handle multi-container pods
+            if 'containers' not in field and 'cpu' in field:
+                return [sum([parse_quantity(q) for ret_value in ret_values for q in ret_value], 0)]
+            elif 'containers' not in field and 'memory' in field:
+                return [f"{sum([parse_quantity(q) for ret_value in ret_values for q in ret_value], 0)/2**30:.2f}Gi"]
+            else:
+                ## Handle other concatenations
+                return sum(ret_values, [])
         elif isinstance(raw_json, dict):
             if len(field) == 1:  # leaf
                 ret = raw_json.get(field[0], default)
@@ -100,18 +110,22 @@ class BaseProcessor:
             if req.select is None:
                 ret.append(raw_json)
             else:
+                data = {
+                    field_name: self._extract_fields(
+                        raw_json,
+                        self._retrieve_field(attrs),
+                        self._retrieve_default(attrs)
+                    )
+                    for field_name, attrs in req.select.items()
+                }
+
+                logging.info(pformat(data)) 
                 ret.append(
                     Table(
                         title=req.title,
                         queries=req.where,
-                        data={
-                            field_name: self._extract_fields(
-                                raw_json,
-                                self._retrieve_field(attrs),
-                                self._retrieve_default(attrs)
-                            )
-                            for field_name, attrs in req.select.items()
-                        })
+                        data=data
+                        )
                 )
 
         if isinstance(rest_blocks, list):

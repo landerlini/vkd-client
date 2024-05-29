@@ -1,9 +1,10 @@
-from vkd_client import YamlProcessor
 from typing import Collection, List, Literal
 import os 
 import jinja2 
 import logging
 import json, re
+
+from .YamlProcessor import YamlProcessor
 
 FileSystemType = Literal['nfs', 'juicefs', 'rclone']
 
@@ -52,3 +53,5 @@ def get_volumes_from_filenames(filenames: Collection[str], filesystem_type: File
         required_mounts += [mp for mp in selected_mounts if abs_path.startswith(mp)]
     
     return list(set(required_mounts))
+
+

@@ -1,4 +1,6 @@
 #!/bin/env python3
+i = 1
+
 import sys
 from pathlib import Path
 from typing import Literal, Optional
@@ -6,7 +8,6 @@ import time
 
 import logging
 import textwrap
-from pprint import pprint
 from typing import List, Union
 from datetime import datetime
 import yaml
@@ -164,7 +165,7 @@ def from_snakemake(
     )
 
     if len(job_names):
-        print(job_names[0])
+        print(job_names[0].replace('_', '-'))
     else:
         raise RuntimeError(f"Submission failed.")
 
@@ -178,6 +179,18 @@ def from_snakemake(
     #         logging.error(f"Failure executing job {properties['rule']}")
     #         logging.error(f"Check logs with `vkd logs {jobname}`")
     #         raise RuntimeError(f"VKD failed processing rule {properties['rule']}")
+
+
+@ app.command
+def get_status_for_snakemake(job: str, status_for_pending: str = "running"):
+    """
+    Prints the Snakemake-compatible status of a job to stdout: running, failed or success.
+    """    
+    df = process_form_template('job_status', name=job).df.set_index('name')
+
+    for job_name, succeeded, failed, running, total in df[['succeeded', 'failed', 'running', 'total']].itertuples():
+        status = "running" if running else "failed" if failed else "success" if succeeded == total else status_for_pending
+        print (status)
         
 
 @app.default
