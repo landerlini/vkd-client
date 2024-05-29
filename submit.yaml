@@ -2,12 +2,12 @@ method: POST
 resource: bunshinjobs
 data:
   - name: sandbox-test
-    queue: hackathon
+    queue: offloading
     original_pod: null
-    volumes: []
-    allow_nfs: False
+    volumes: {}
     script: /sandbox/entrypoint.sh
     completions: 2
+    provide_output_url: false
 
     # spec:
     #   template:
