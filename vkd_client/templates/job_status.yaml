@@ -1,0 +1,35 @@
+method: GET
+resource: jobs
+title: Jobs
+select:
+  user:
+    field: user
+    default: user
+  name:
+    field: name
+    default: n/a
+  succeeded:
+    field: status.succeeded
+    default: 0
+  failed:
+    field: status.failed
+    default: 0
+  running:
+    field: status.active
+    default: 0
+  total:
+    field: spec.completions
+    default: 0
+  queue:
+    field: queue
+    default: ''
+  cpu:
+    field: spec.template.spec.containers.resources.requests.cpu
+    default: 0
+  memory:
+    field: spec.template.spec.containers.resources.requests.memory
+    default: 0
+
+where:
+  - name == '{{ name }}'
+
