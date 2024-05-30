@@ -8,19 +8,12 @@ data:
     script: /sandbox/entrypoint.sh
     completions: 2
     provide_output_url: false
+    memory_request: 1Gi
+    cpu_request: 0.5
 
-    # spec:
-    #   template:
-    #     spec:
-    #       restartPolicy: Never
-    #       containers:
-    #         - name: main
-    #           image: python:latest
-    #           restartPolicy: Never
-    #           command:
-    #            - bash
-    #            - /sandbox/entrypoint.sh
-    #
+    offloading:
+      enabled: True
+      node_name: recas-node
 
 
     sandbox:
