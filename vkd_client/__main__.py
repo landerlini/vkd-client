@@ -91,7 +91,7 @@ def killall(queue: str = None, user: str = os.environ.get('JUPYTERHUB_USER')):
     pprint(process_form_template('kill', jobnames=jobs.df.name))
 
 @app.command
-def logs(job: str, index: Union[int, None] = None, container: Union[str, None] = None):
+def logs(job: str, index: Union[int, None] = None, container: Union[str, None] = 'notebook'):
     """
     Retrieve and display the output of a job
 
@@ -139,6 +139,9 @@ def from_snakemake(
     properties = get_snakemake_job_properties(jobscript)
     logging.debug(pformat(properties))
 
+    tolerations = properties.get('resources', {}).get('tolerations', '').replace(' ', '').split(',')
+    offloading = 'offloading' in tolerations
+
     special_volumes = {
         'nfs': [] if nfs_volumes is None else list(nfs_volumes.split(":")),
         'juicefs': [] if juicefs_volumes is None else list(juicefs_volumes.split(":")),
@@ -150,7 +153,7 @@ def from_snakemake(
             sum([properties[category] for category in ('input', 'output', 'log')], []),
             filesystem_type=special_volume_type
         )
-
+    
     job_names = process_form_template(
         'from_snakemake', 
         queue=queue, 
