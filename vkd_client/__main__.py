@@ -73,7 +73,9 @@ def kill(jobnames: List[str]):
         list of jobs to be removed
     """
     if len(jobnames):
-        pprint(process_form_template('kill', jobnames=jobnames))
+        print(f"Deleting jobs: {', '.join(jobnames)}")
+        process_form_template('kill', jobnames=jobnames)
+
 
 @app.command
 def killall(queue: str = None, user: str = os.environ.get('JUPYTERHUB_USER')):

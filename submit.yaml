@@ -6,15 +6,13 @@ data:
     original_pod: null
     volumes: {}
     script: /sandbox/entrypoint.sh
-    completions: 2
+    completions: 5
     provide_output_url: false
     memory_request: 1Gi
     cpu_request: 0.5
 
     offloading:
       enabled: True
-      node_name: recas-node
-
 
     sandbox:
       entrypoint.sh: |
