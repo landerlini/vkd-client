@@ -155,12 +155,21 @@ def from_snakemake(
             sum([properties[category] for category in ('input', 'output', 'log')], []),
             filesystem_type=special_volume_type
         )
+
+    with open(jobscript) as f:
+        jobscript_data = "\n".join((
+            "unset APPTAINER_BIND", 
+            "unset SINGULARITY_BIND", 
+            "unset SINGULARITY_NO_EVAL", 
+            "unset APPTAINER_NO_EVAL", 
+            f.read()
+        ))
     
     job_names = process_form_template(
         'from_snakemake', 
         queue=queue, 
         priority=priority, 
-        jobscript=open(jobscript).read(), 
+        jobscript=jobscript_data, 
         snakemake=properties,
         juicefs_provisioning=juicefs_provisioning,
         cvmfs_provisioning=cvmfs_provisioning,
